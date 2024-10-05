@@ -1,0 +1,210 @@
+[
+    {
+        "name": "comedy",
+        "russian_name": "комедия"
+    },
+    {
+        "name": "parody",
+        "russian_name": "пародия"
+    },
+    {
+        "name": "sitcom",
+        "russian_name": "комедия положений"
+    },
+    {
+        "name": "tragedy",
+        "russian_name": "трагедия"
+    },
+    {
+        "name": "drama",
+        "russian_name": "драма"
+    },
+    {
+        "name": "horror",
+        "russian_name": "ужасы"
+    },
+    {
+        "name": "fairy tale",
+        "russian_name": "сказка"
+    },
+    {
+        "name": "romance",
+        "russian_name": "роман"
+    },
+    {
+        "name": "story",
+        "russian_name": "повесть"
+    },
+    {
+        "name": "tale",
+        "russian_name": "рассказ"
+    },
+    {
+        "name": "novella",
+        "russian_name": "новелла"
+    },
+    {
+        "name": "poem",
+        "russian_name": "поэма"
+    },
+    {
+        "name": "essay",
+        "russian_name": "эссе"
+    },
+    {
+        "name": "fantasy",
+        "russian_name": "фантастика"
+    },
+    {
+        "name": "action",
+        "russian_name": "боевик"
+    },
+    {
+        "name": "detective",
+        "russian_name": "детектив"
+    },
+    {
+        "name": "history",
+        "russian_name": "история"
+    },
+    {
+        "name": "mysticism",
+        "russian_name": "мистика"
+    },
+    {
+        "name": "adventures",
+        "russian_name": "приключения"
+    },
+    {
+        "name": "thriller",
+        "russian_name": "триллер"
+    },
+    {
+        "name": "science fiction",
+        "russian_name": "научная фантастика"
+    },
+    {
+        "name": "fantasy",
+        "russian_name": "фэнтези"
+    },
+    {
+        "name": "memoirs",
+        "russian_name": "мемуары"
+    },
+    {
+        "name": "biography",
+        "russian_name": "биография"
+    },
+    {
+        "name": "art",
+        "russian_name": "искусство"
+    },
+    {
+        "name": "business literature",
+        "russian_name": "деловая литература"
+    },
+    {
+        "name": "economy",
+        "russian_name": "экономика"
+    },
+    {
+        "name": "geography",
+        "russian_name": "география"
+    },
+    {
+        "name": "journalism",
+        "russian_name": "публицистика"
+    },
+    {
+        "name": "sport",
+        "russian_name": "спорт"
+    },
+    {
+        "name": "cooking",
+        "russian_name": "кулинария"
+    },
+    {
+        "name": "garden",
+        "russian_name": "сад и огород"
+    },
+    {
+        "name": "entertainment",
+        "russian_name": "развлечения"
+    },
+    {
+        "name": "painting",
+        "russian_name": "живопись"
+    },
+    {
+        "name": "criticism",
+        "russian_name": "критика"
+    },
+    {
+        "name": "music",
+        "russian_name": "музыка"
+    },
+    {
+        "name": "programming",
+        "russian_name": "программирование"
+    },
+    {
+        "name": "children's literature",
+        "russian_name": "детская литература"
+    },
+    {
+        "name": "poetry",
+        "russian_name": "поэзия"
+    },
+    {
+        "name": "erotica",
+        "russian_name": "эротика"
+    },
+    {
+        "name": "biology",
+        "russian_name": "биология"
+    },
+    {
+        "name": "astronomy",
+        "russian_name": "астрономия"
+    },
+    {
+        "name": "botany",
+        "russian_name": "ботаника"
+    },
+    {
+        "name": "medicine",
+        "russian_name": "медицина"
+    },
+    {
+        "name": "scientific",
+        "russian_name": "наука"
+    },
+    {
+        "name": "psychology",
+        "russian_name": "психология"
+    },
+    {
+        "name": "mathematics",
+        "russian_name": "математика"
+    },
+    {
+        "name": "policy",
+        "russian_name": "политика"
+    },
+    {
+        "name": "physics",
+        "russian_name": "физика"
+    },
+    {
+        "name": "chemistry",
+        "russian_name": "химия"
+    },
+    {
+        "name": "jurisprudence",
+        "russian_name": "юриспруденция"
+    },
+    {
+        "name": "philosophy",
+        "russian_name": "философия"
+    }
+]
