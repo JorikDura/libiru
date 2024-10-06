@@ -21,7 +21,10 @@ final readonly class ImageCounterRule implements ValidationRule
         $dbBookImagesCount = $this->model->images()->count();
 
         if ($this->max < ($inputImagesCount + $dbBookImagesCount)) {
-            $fail('The :attribute has too many things already. Max is '.$this->max);
+            $fail('validation.custom.image_count')->translate([
+                'attribute' => $attribute,
+                'max' => $this->max
+            ]);
         }
     }
 }

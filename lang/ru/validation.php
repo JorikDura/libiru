@@ -178,6 +178,7 @@ return [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
+        'image_count' => 'Поле :attribute переполнено. Максимум - :max'
     ],
 
     /*
