@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\DB;
 
 final readonly class ShowBookScoreAction
 {
+    /**
+     * @param  int  $bookId
+     * @return Collection
+     */
     public function __invoke(int $bookId): Collection
     {
         return DB::table('user_book_list')

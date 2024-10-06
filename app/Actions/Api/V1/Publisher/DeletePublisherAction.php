@@ -9,6 +9,10 @@ use App\Models\Publisher;
 
 final readonly class DeletePublisherAction
 {
+    /**
+     * @param  Publisher  $publisher
+     * @return void
+     */
     public function __invoke(Publisher $publisher): void
     {
         /** @var Image $image */

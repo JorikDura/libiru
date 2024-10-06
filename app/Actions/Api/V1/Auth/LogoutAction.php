@@ -9,6 +9,10 @@ use Laravel\Sanctum\PersonalAccessToken;
 
 final readonly class LogoutAction
 {
+    /**
+     * @param  User  $user
+     * @return void
+     */
     public function __invoke(User $user): void
     {
         /** @var PersonalAccessToken $token */

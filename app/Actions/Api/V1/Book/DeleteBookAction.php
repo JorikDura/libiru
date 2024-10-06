@@ -8,6 +8,10 @@ use App\Models\Book;
 
 final readonly class DeleteBookAction
 {
+    /**
+     * @param  Book  $book
+     * @return void
+     */
     public function __invoke(Book $book): void
     {
         $images = $book->images()->get();

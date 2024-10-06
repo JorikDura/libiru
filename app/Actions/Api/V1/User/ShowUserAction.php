@@ -10,6 +10,10 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 final readonly class ShowUserAction
 {
+    /**
+     * @param  int  $userId
+     * @return User|Model
+     */
     public function __invoke(int $userId): User|Model
     {
         return QueryBuilder::for(User::class)

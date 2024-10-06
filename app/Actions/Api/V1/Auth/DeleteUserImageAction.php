@@ -9,6 +9,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 final readonly class DeleteUserImageAction
 {
+    /**
+     * @param  User  $user
+     * @return void
+     */
     public function __invoke(User $user): void
     {
         $image = $user->image()->first() ?? abort(

@@ -14,6 +14,10 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 final readonly class IndexBookAction
 {
+    /**
+     * @param  IndexBookRequest  $request
+     * @return LengthAwarePaginator
+     */
     public function __invoke(IndexBookRequest $request): LengthAwarePaginator
     {
         /** @var ?User $user */

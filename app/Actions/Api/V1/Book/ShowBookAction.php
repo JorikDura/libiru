@@ -14,6 +14,10 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 final readonly class ShowBookAction
 {
+    /**
+     * @param  int  $bookId
+     * @return Book|Model
+     */
     public function __invoke(
         int $bookId
     ): Book|Model {

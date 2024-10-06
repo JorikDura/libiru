@@ -13,6 +13,10 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 final readonly class IndexPersonAction
 {
+    /**
+     * @param  Request  $request
+     * @return LengthAwarePaginator
+     */
     public function __invoke(Request $request): LengthAwarePaginator
     {
         return QueryBuilder::for(Person::class)

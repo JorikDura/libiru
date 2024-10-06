@@ -10,6 +10,11 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 final readonly class IndexBookCommentAction
 {
+    /**
+     * @param  Book  $book
+     * @param  Request  $request
+     * @return LengthAwarePaginator
+     */
     public function __invoke(
         Book $book,
         Request $request

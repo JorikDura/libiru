@@ -10,6 +10,10 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 final readonly class ShowPublisherAction
 {
+    /**
+     * @param  int  $publisherId
+     * @return Publisher|Model
+     */
     public function __invoke(int $publisherId): Publisher|Model
     {
         return QueryBuilder::for(Publisher::class)

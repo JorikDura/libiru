@@ -8,6 +8,10 @@ use App\Models\Person;
 
 final readonly class DeletePersonAction
 {
+    /**
+     * @param  Person  $person
+     * @return void
+     */
     public function __invoke(Person $person): void
     {
         $images = $person->images()

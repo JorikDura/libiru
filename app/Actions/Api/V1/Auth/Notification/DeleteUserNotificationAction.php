@@ -9,6 +9,11 @@ use App\Models\User;
 
 final readonly class DeleteUserNotificationAction
 {
+    /**
+     * @param  User  $user
+     * @param  DeleteUserNotificationRequest  $request
+     * @return void
+     */
     public function __invoke(
         User $user,
         DeleteUserNotificationRequest $request
