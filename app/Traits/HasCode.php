@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Notifications;
+namespace App\Traits;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
