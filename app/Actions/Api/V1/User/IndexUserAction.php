@@ -11,11 +11,15 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 final readonly class IndexUserAction
 {
+    public function __construct(
+        private Request $request,
+    ) {
+    }
+
     /**
-     * @param  Request  $request
      * @return LengthAwarePaginator
      */
-    public function __invoke(Request $request): LengthAwarePaginator
+    public function __invoke(): LengthAwarePaginator
     {
         return QueryBuilder::for(User::class)
             ->allowedFilters([
@@ -23,6 +27,6 @@ final readonly class IndexUserAction
             ])
             ->with(['image'])
             ->paginate()
-            ->appends($request->query());
+            ->appends($this->request->query());
     }
 }

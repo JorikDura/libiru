@@ -8,6 +8,7 @@ use App\Actions\Api\V1\Publisher\DeletePublisherAction;
 use App\Http\Controllers\Controller;
 use App\Models\Publisher;
 use Illuminate\Http\Response;
+use ReflectionException;
 
 class DeletePublisherController extends Controller
 {
@@ -15,6 +16,7 @@ class DeletePublisherController extends Controller
      * @param  Publisher  $publisher
      * @param  DeletePublisherAction  $action
      * @return Response
+     * @throws ReflectionException
      */
     public function __invoke(
         Publisher $publisher,

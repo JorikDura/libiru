@@ -12,27 +12,25 @@ use ReflectionException;
 final readonly class UpdatePersonAction
 {
     public function __construct(
+        private UpdatePersonRequest $request,
         private StoreImageAction $storeImageAction
     ) {
     }
 
     /**
      * @param  Person  $person
-     * @param  UpdatePersonRequest  $request
      * @return Person
      * @throws ReflectionException
      */
-    public function __invoke(
-        Person $person,
-        UpdatePersonRequest $request
-    ): Person {
-        $personData = $request->safe()->except('images');
+    public function __invoke(Person $person): Person
+    {
+        $personData = $this->request->safe()->except('images');
 
         $person->update($personData);
 
         unset($personData);
 
-        $request->whenHas('images', function (array $images) use ($person) {
+        $this->request->whenHas('images', function (array $images) use ($person) {
             $this->storeImageAction->storeMany(
                 files: $images,
                 id: $person->id,

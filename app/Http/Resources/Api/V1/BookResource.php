@@ -26,14 +26,14 @@ class BookResource extends JsonResource
             'authors' => PersonResource::collection($this->whenLoaded('authors')),
             'translators' => PersonResource::collection($this->whenLoaded('translators')),
             'publisher' => PublisherResource::make($this->whenLoaded('publisher')),
+            $this->mergeWhen(!$this->relationLoaded('publisher'), [
+                'publisher_id' => $this->whenHas('publisher_id')
+            ]),
             'genres' => GenreResource::collection($this->whenLoaded('genres')),
             'total_score' => $this->whenHas('total_score'),
             'user_score' => $this->whenHas('score'),
             'is_favorite' => $this->whenHas('is_favorite'),
             'status' => $this->whenHas('status'),
-            $this->mergeWhen(!$this->relationLoaded('publisher'), [
-                'publisher_id' => $this->publisher_id
-            ])
         ];
     }
 }

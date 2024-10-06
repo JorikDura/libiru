@@ -5,21 +5,24 @@ declare(strict_types=1);
 namespace App\Actions\Api\V1\Auth\Notification;
 
 use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 
 final readonly class IndexUserNotificationAction
 {
+    public function __construct(
+        private Request $request,
+        #[CurrentUser] private User $user,
+    ) {
+    }
+
     /**
-     * @param  Request  $request
-     * @param  User  $user
      * @return LengthAwarePaginator
      */
-    public function __invoke(
-        Request $request,
-        User $user
-    ): LengthAwarePaginator {
-        return $user
+    public function __invoke(): LengthAwarePaginator
+    {
+        return $this->user
             ->notifications()
             ->paginate(columns: [
                 'id',
@@ -28,6 +31,6 @@ final readonly class IndexUserNotificationAction
                 'read_at',
                 'created_at'
             ])
-            ->appends($request->query());
+            ->appends($this->request->query());
     }
 }

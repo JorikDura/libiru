@@ -6,22 +6,19 @@ namespace App\Http\Controllers\Api\V1\Person;
 
 use App\Actions\Api\V1\Person\StorePersonAction;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\Person\StorePersonRequest;
 use App\Http\Resources\Api\V1\PersonResource;
+use ReflectionException;
 
 class StorePersonController extends Controller
 {
     /**
      * @param  StorePersonAction  $action
-     * @param  StorePersonRequest  $request
      * @return PersonResource
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
-    public function __invoke(
-        StorePersonAction $action,
-        StorePersonRequest $request
-    ): PersonResource {
-        $person = $action($request);
+    public function __invoke(StorePersonAction $action): PersonResource
+    {
+        $person = $action();
 
         return PersonResource::make($person);
     }

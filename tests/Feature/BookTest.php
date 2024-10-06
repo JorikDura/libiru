@@ -149,17 +149,35 @@ describe('book tests', function () {
     });
 
     it('delete book', function () {
+        Storage::fake('public');
+
         /** @var Book $book */
         $book = $this->books->random();
+
+        $original = TestHelpers::storeFakeFiles(
+            path: 'images/posts',
+            name: 'test.jpg'
+        );
+
+        $preview = TestHelpers::storeFakeFiles(
+            path: 'images/posts',
+            name: 'test-scaled.jpg'
+        );
 
         $imageData = [
             'imageable_id' => $book->id,
             'imageable_type' => Book::class,
-            'original_image' => 'test.jpg',
-            'preview_image' => 'test-scaled.jpg'
+            'original_image' => $original,
+            'preview_image' => $preview
         ];
 
-        Image::factory()->create($imageData);
+        /** @var Image $image */
+        $image = Image::factory()->create($imageData);
+
+        Storage::disk('public')->assertExists([
+            $image->original_image,
+            $image->preview_image,
+        ]);
 
         deleteJson(uri: "api/v1/books/$book->id")
             ->assertSuccessful()
@@ -174,6 +192,11 @@ describe('book tests', function () {
             table: 'images',
             data: $imageData
         );
+
+        Storage::disk('public')->assertMissing([
+            $image->original_image,
+            $image->preview_image
+        ]);
     });
 
     it('get book comments', function () {

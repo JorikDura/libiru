@@ -13,21 +13,20 @@ use ReflectionException;
 final readonly class UpdateBookAction
 {
     public function __construct(
-        private StoreImageAction $storeImageAction
+        private StoreImageAction $storeImageAction,
+        private UpdateBookRequest $request
     ) {
     }
 
     /**
      * @param  Book  $book
-     * @param  UpdateBookRequest  $request
      * @return Book
      * @throws ReflectionException
      */
     public function __invoke(
-        Book $book,
-        UpdateBookRequest $request
+        Book $book
     ): Book {
-        $bookData = $request->safe()->except([
+        $bookData = $this->request->safe()->except([
             'images',
             'authors',
             'translators',
@@ -38,11 +37,11 @@ final readonly class UpdateBookAction
 
         unset($bookData);
 
-        $request->whenHas('authors', function (array $authors) use ($book) {
+        $this->request->whenHas('authors', function (array $authors) use ($book) {
             $book->authors()->sync($authors);
         });
 
-        $request->whenHas('translators', function (array $translators) use ($book) {
+        $this->request->whenHas('translators', function (array $translators) use ($book) {
             $book->translators()->syncWithPivotValues(
                 ids: $translators,
                 values: [
@@ -51,11 +50,11 @@ final readonly class UpdateBookAction
             );
         });
 
-        $request->whenHas('genres', function (array $genres) use ($book) {
+        $this->request->whenHas('genres', function (array $genres) use ($book) {
             $book->genres()->sync($genres);
         });
 
-        $request->whenHas('images', function (array $images) use ($book) {
+        $this->request->whenHas('images', function (array $images) use ($book) {
             $this->storeImageAction->storeMany(
                 files: $images,
                 id: $book->id,

@@ -13,7 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
             __DIR__.'/../routes/api/v1/people.php',
             __DIR__.'/../routes/api/v1/publishers.php',
             __DIR__.'/../routes/api/v1/books.php',
-            __DIR__.'/../routes/api/v1/genres.php'
+            __DIR__.'/../routes/api/v1/genres.php',
+            __DIR__.'/../routes/api/v1/tags.php',
+            __DIR__.'/../routes/api/v1/posts.php'
         ],
         commands: __DIR__.'/../routes/console.php',
         channels: __DIR__.'/../routes/channels.php',

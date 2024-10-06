@@ -8,6 +8,7 @@ use App\Actions\Api\V1\Book\DeleteBookAction;
 use App\Http\Controllers\Controller;
 use App\Models\Book;
 use Illuminate\Http\Response;
+use ReflectionException;
 
 class DeleteBookController extends Controller
 {
@@ -15,6 +16,7 @@ class DeleteBookController extends Controller
      * @param  Book  $book
      * @param  DeleteBookAction  $action
      * @return Response
+     * @throws ReflectionException
      */
     public function __invoke(
         Book $book,

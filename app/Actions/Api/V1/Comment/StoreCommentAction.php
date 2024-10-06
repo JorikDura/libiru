@@ -7,11 +7,15 @@ namespace App\Actions\Api\V1\Comment;
 use App\Actions\Images\StoreImageAction;
 use App\Http\Requests\Api\V1\Comment\StoreCommentRequest;
 use App\Models\Comment;
+use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use ReflectionException;
 
 final readonly class StoreCommentAction
 {
     public function __construct(
+        #[CurrentUser] private User $user,
+        private StoreCommentRequest $request,
         private StoreImageAction $storeImageAction
     ) {
     }
@@ -19,23 +23,21 @@ final readonly class StoreCommentAction
     /**
      * @param  int  $commentableId
      * @param  string  $commentableType
-     * @param  StoreCommentRequest  $request
      * @return Comment
      * @throws ReflectionException
      */
     public function __invoke(
         int $commentableId,
-        string $commentableType,
-        StoreCommentRequest $request
+        string $commentableType
     ): Comment {
         $comment = Comment::create([
             'commentable_id' => $commentableId,
             'commentable_type' => $commentableType,
-            'user_id' => $request->user()->id,
-            'text' => $request->validated('text'),
+            'user_id' => $this->user->id,
+            'text' => $this->request->validated('text'),
         ]);
 
-        $request->whenHas('images', function (array $images) use ($comment) {
+        $this->request->whenHas('images', function (array $images) use ($comment) {
             $this->storeImageAction->storeMany(
                 files: $images,
                 id: $comment->id,

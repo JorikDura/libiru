@@ -13,11 +13,15 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 final readonly class IndexPersonAction
 {
+    public function __construct(
+        private Request $request
+    ) {
+    }
+
     /**
-     * @param  Request  $request
      * @return LengthAwarePaginator
      */
-    public function __invoke(Request $request): LengthAwarePaginator
+    public function __invoke(): LengthAwarePaginator
     {
         return QueryBuilder::for(Person::class)
             ->allowedFilters([
@@ -32,6 +36,6 @@ final readonly class IndexPersonAction
                 'name',
                 'russian_name'
             ])
-            ->appends($request->query());
+            ->appends($this->request->query());
     }
 }

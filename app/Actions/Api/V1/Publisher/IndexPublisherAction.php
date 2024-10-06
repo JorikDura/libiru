@@ -11,16 +11,20 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 final readonly class IndexPublisherAction
 {
+    public function __construct(
+        private Request $request
+    ) {
+    }
+
     /**
-     * @param  Request  $request
      * @return LengthAwarePaginator
      */
-    public function __invoke(Request $request): LengthAwarePaginator
+    public function __invoke(): LengthAwarePaginator
     {
         return QueryBuilder::for(Publisher::class)
             ->allowedFilters('name')
             ->with(['image'])
             ->paginate()
-            ->appends($request->query());
+            ->appends($this->request->query());
     }
 }

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Person extends Model
 {
@@ -61,6 +62,15 @@ class Person extends Model
             table: 'person_subscribers',
             foreignPivotKey: 'person_id',
             relatedPivotKey: 'user_id',
+        );
+    }
+
+    public function posts(): MorphToMany
+    {
+        return $this->morphedByMany(
+            related: Post::class,
+            name: 'relatable',
+            table: 'post_related'
         );
     }
 }

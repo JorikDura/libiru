@@ -13,27 +13,25 @@ use ReflectionException;
 final readonly class UpdatePublisherAction
 {
     public function __construct(
+        private UpdatePublisherRequest $request,
         private StoreImageAction $storeImageAction
     ) {
     }
 
     /**
      * @param  Publisher  $publisher
-     * @param  UpdatePublisherRequest  $request
      * @return Publisher
      * @throws ReflectionException
      */
-    public function __invoke(
-        Publisher $publisher,
-        UpdatePublisherRequest $request
-    ): Publisher {
-        $publisherData = $request->safe()->except('image');
+    public function __invoke(Publisher $publisher): Publisher
+    {
+        $publisherData = $this->request->safe()->except('image');
 
         $publisher->update($publisherData);
 
         unset($publisherData);
 
-        $request->whenHas('image', function (UploadedFile $image) use ($publisher) {
+        $this->request->whenHas('image', function (UploadedFile $image) use ($publisher) {
             $publisher->image()->first()?->delete();
 
             $this->storeImageAction->store(

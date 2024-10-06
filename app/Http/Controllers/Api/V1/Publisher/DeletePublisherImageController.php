@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1\Publisher;
 
-use App\Actions\Images\DeleteImageAction;
+use App\Actions\Images\DeleteImageActionByIdAction;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\Image\DeleteImageRequest;
 use App\Models\Publisher;
 use Illuminate\Http\Response;
 
@@ -14,19 +13,14 @@ class DeletePublisherImageController extends Controller
 {
     /**
      * @param  Publisher  $publisher
-     * @param  DeleteImageAction  $action
-     * @param  DeleteImageRequest  $request
+     * @param  DeleteImageActionByIdAction  $action
      * @return Response
      */
     public function __invoke(
         Publisher $publisher,
-        DeleteImageAction $action,
-        DeleteImageRequest $request
+        DeleteImageActionByIdAction $action
     ): Response {
-        $action(
-            model: $publisher,
-            request: $request
-        );
+        $action($publisher);
 
         return response()->noContent();
     }

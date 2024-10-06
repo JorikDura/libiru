@@ -4,28 +4,54 @@ declare(strict_types=1);
 
 namespace App\Actions\Images;
 
-use App\Http\Requests\Api\V1\Image\DeleteImageRequest;
 use App\Models\Image;
-use Symfony\Component\HttpFoundation\Response;
+use ReflectionClass;
+use ReflectionException;
 
 final readonly class DeleteImageAction
 {
-    /**
-     * @param  mixed  $model
-     * @param  DeleteImageRequest  $request
-     * @return void
-     */
-    public function __invoke(
-        mixed $model,
-        DeleteImageRequest $request
-    ): void {
-        /** @var Image $image */
-        $image = $model->images()->find($request->validated('id'))
-            ?? abort(
-                code: Response::HTTP_NOT_FOUND,
-                message: __('messages.no_image_found_for_current_model')
-            );
+    private const string ERROR_MESSAGE = "There's no such methods as 'images' or 'image' for %s";
 
-        $image->delete();
+    /**
+     * Delete images
+     * If there is no such methods as "images" or "image"
+     * Exception will be thrown
+     * @param  object  $model
+     * @return void
+     * @throws ReflectionException
+     */
+    public function __invoke(object $model): void
+    {
+        $reflection = new ReflectionClass($model);
+
+        if ($reflection->hasMethod('images')) {
+            $images = $model->images()->get();
+
+            $images?->each(function (Image $image) {
+                $image->deleteImagesInStorage();
+            });
+
+            if (!is_null($images)) {
+                $model->images()->delete();
+            }
+
+            return;
+        }
+
+        if ($reflection->hasMethod('image')) {
+            /** @var ?Image $image */
+            $image = $model->image()->first();
+
+            $image?->delete();
+
+            return;
+        }
+
+        throw new ReflectionException(
+            message: sprintf(
+                format: self::ERROR_MESSAGE,
+                values: $reflection->getShortName()
+            )
+        );
     }
 }

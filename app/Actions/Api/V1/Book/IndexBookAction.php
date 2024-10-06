@@ -14,22 +14,26 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 final readonly class IndexBookAction
 {
+    public function __construct(
+        private IndexBookRequest $request
+    ) {
+    }
+
     /**
-     * @param  IndexBookRequest  $request
      * @return LengthAwarePaginator
      */
-    public function __invoke(IndexBookRequest $request): LengthAwarePaginator
+    public function __invoke(): LengthAwarePaginator
     {
         /** @var ?User $user */
         $user = auth('sanctum')->user();
 
-        $userId = $request->validated('user_id') ?? $user?->id;
+        $userId = $this->request->validated('user_id') ?? $user?->id;
 
         unset($user);
 
-        $status = $request->validated('list_status');
+        $status = $this->request->validated('list_status');
 
-        $isFavourite = $request->validated('is_favorite', false);
+        $isFavourite = $this->request->validated('is_favorite', false);
 
         return QueryBuilder::for(Book::class)
             ->allowedFilters([
@@ -77,6 +81,6 @@ final readonly class IndexBookAction
                         'user_book_list.user_id' => $userId
                     ])
                 )
-            )->paginate()->appends($request->query());
+            )->paginate()->appends($this->request->query());
     }
 }

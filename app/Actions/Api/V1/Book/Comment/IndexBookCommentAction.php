@@ -10,15 +10,17 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 final readonly class IndexBookCommentAction
 {
+    public function __construct(
+        private Request $request
+    ) {
+    }
+
     /**
      * @param  Book  $book
-     * @param  Request  $request
      * @return LengthAwarePaginator
      */
-    public function __invoke(
-        Book $book,
-        Request $request
-    ): LengthAwarePaginator {
+    public function __invoke(Book $book): LengthAwarePaginator
+    {
         return $book
             ->comments()
             ->with([
@@ -26,6 +28,6 @@ final readonly class IndexBookCommentAction
                 'user:id,name' => ['image']
             ])
             ->paginate()
-            ->appends($request->query());
+            ->appends($this->request->query());
     }
 }

@@ -18,7 +18,7 @@ class UserResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'images' => ImageResource::make($this->whenLoaded('images')),
+            'image' => ImageResource::make($this->whenLoaded('image')),
             'created_at' => $this->whenHas('created_at')
         ];
     }

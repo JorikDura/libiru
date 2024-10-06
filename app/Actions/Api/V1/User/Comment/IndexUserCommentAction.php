@@ -10,19 +10,22 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 final readonly class IndexUserCommentAction
 {
+    public function __construct(
+        private Request $request
+    ) {
+    }
+
     /**
      * @param  User  $user
-     * @param  Request  $request
      * @return LengthAwarePaginator
      */
     public function __invoke(
-        User $user,
-        Request $request
+        User $user
     ): LengthAwarePaginator {
         return $user
             ->comments()
             ->with(['user', 'images'])
             ->paginate()
-            ->appends($request->query());
+            ->appends($this->request->query());
     }
 }

@@ -6,6 +6,7 @@ namespace Tests;
 
 use Illuminate\Http\Testing\File;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Random\RandomException;
 
 class TestHelpers
@@ -27,12 +28,33 @@ class TestHelpers
         return $files;
     }
 
-    public static function uploadFile(string $name): File
-    {
+    public static function uploadFile(
+        string $name,
+        int $width = self::IMAGE_WIDTH,
+        int $height = self::IMAGE_HEIGHT
+    ): File {
         return UploadedFile::fake()->image(
             name: $name,
-            width: self::IMAGE_WIDTH,
-            height: self::IMAGE_HEIGHT
+            width: $width,
+            height: $height
         );
+    }
+
+    public static function storeFakeFiles(
+        string $path,
+        string $name,
+        string $disk = 'public',
+        int $width = self::IMAGE_WIDTH,
+        int $height = self::IMAGE_HEIGHT
+    ) {
+        return Storage::disk($disk)
+            ->put(
+                path: $path,
+                contents: TestHelpers::uploadFile(
+                    name: $name,
+                    width: $width,
+                    height: $height
+                )
+            );
     }
 }

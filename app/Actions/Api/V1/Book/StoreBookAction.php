@@ -14,18 +14,17 @@ final readonly class StoreBookAction
 {
     public function __construct(
         private StoreImageAction $storeImageAction,
+        private StoreBookRequest $request
     ) {
     }
 
     /**
-     * @param  StoreBookRequest  $request
      * @return Book
      */
-    public function __invoke(
-        StoreBookRequest $request
-    ): Book {
-        return DB::transaction(function () use ($request) {
-            $bookData = $request->safe()->except([
+    public function __invoke(): Book
+    {
+        return DB::transaction(function () {
+            $bookData = $this->request->safe()->except([
                 'images',
                 'authors',
                 'translators',
@@ -37,13 +36,13 @@ final readonly class StoreBookAction
             unset($bookData);
 
             /** @var array $authors */
-            $authors = $request->validated('authors');
+            $authors = $this->request->validated('authors');
 
             $book->authors()->attach($authors);
 
             unset($authors);
 
-            $request->whenHas('translators', function ($translators) use ($book) {
+            $this->request->whenHas('translators', function ($translators) use ($book) {
                 $book->translators()->attach(
                     id: $translators,
                     attributes: [
@@ -52,11 +51,11 @@ final readonly class StoreBookAction
                 );
             });
 
-            $request->whenHas('genres', function (array $genres) use ($book) {
+            $this->request->whenHas('genres', function (array $genres) use ($book) {
                 $book->genres()->attach($genres);
             });
 
-            $request->whenHas('images', function (array $images) use ($book) {
+            $this->request->whenHas('images', function (array $images) use ($book) {
                 $this->storeImageAction->storeMany(
                     files: $images,
                     id: $book->id,

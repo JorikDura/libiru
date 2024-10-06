@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 #[ObservedBy(BookObserver::class)]
 class Book extends Model
@@ -80,6 +81,15 @@ class Book extends Model
             table: 'user_book_list',
             foreignPivotKey: 'book_id',
             relatedPivotKey: 'user_id'
+        );
+    }
+
+    public function posts(): MorphToMany
+    {
+        return $this->morphedByMany(
+            related: Post::class,
+            name: 'relatable',
+            table: 'post_related'
         );
     }
 }

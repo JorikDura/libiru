@@ -12,25 +12,24 @@ use ReflectionException;
 final readonly class StorePersonAction
 {
     public function __construct(
-        private StoreImageAction $storeImageAction
+        private StoreImageAction $storeImageAction,
+        private StorePersonRequest $request
     ) {
     }
 
     /**
-     * @param  StorePersonRequest  $request
      * @return Person
      * @throws ReflectionException
      */
-    public function __invoke(
-        StorePersonRequest $request
-    ): Person {
-        $personData = $request->safe()->except('images');
+    public function __invoke(): Person
+    {
+        $personData = $this->request->safe()->except('images');
 
         $person = Person::create($personData);
 
         unset($personData);
 
-        $request->whenHas('images', function (array $images) use ($person) {
+        $this->request->whenHas('images', function (array $images) use ($person) {
             $this->storeImageAction->storeMany(
                 files: $images,
                 id: $person->id,
