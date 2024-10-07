@@ -24,7 +24,7 @@ class DeleteBookCommentController extends Controller
         Book $book,
         Comment $comment,
         DeleteCommentAction $action
-    ) {
+    ): Response {
         $action($comment);
 
         return response()->noContent();
