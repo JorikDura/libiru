@@ -1,18 +1,27 @@
 <?php
 
+use App\Enums\UserRole;
 use App\Models\Image;
 use App\Models\Publisher;
+use App\Models\User;
 use Tests\TestHelpers;
 
+use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertDatabaseMissing;
-use function Pest\Laravel\deleteJson;
 use function Pest\Laravel\getJson;
-use function Pest\Laravel\postJson;
 
 describe('publishers tests', function () {
     beforeEach(function () {
         $this->publishers = Publisher::factory(15)->create();
+
+        $this->userAdmin = User::factory()->create([
+            'role' => UserRole::ADMIN
+        ]);
+
+        $this->user = User::factory()->create([
+            'role' => UserRole::USER
+        ]);
     });
 
     it('get publishers', function () {
@@ -60,7 +69,7 @@ describe('publishers tests', function () {
             'image' => TestHelpers::uploadFile('image.jpg')
         ];
 
-        $test = postJson(
+        $test = actingAs($this->userAdmin)->postJson(
             uri: "api/v1/publishers",
             data: $data
         )->assertSuccessful()->assertSee([
@@ -90,6 +99,12 @@ describe('publishers tests', function () {
         ]);
     });
 
+    it('simple user cannot store publisher', function () {
+        actingAs($this->user)->postJson(
+            uri: "api/v1/publishers"
+        )->assertForbidden();
+    });
+
     it('update publisher', function () {
         Storage::fake('public');
 
@@ -102,7 +117,7 @@ describe('publishers tests', function () {
             '_method' => 'PUT'
         ];
 
-        postJson(
+        actingAs($this->userAdmin)->postJson(
             uri: "api/v1/publishers/$publisher->id",
             data: $data
         )->assertSuccessful()->assertSee([
@@ -121,7 +136,18 @@ describe('publishers tests', function () {
         );
     });
 
+    it('simple user cannot update publisher', function () {
+        /** @var Publisher $publisher */
+        $publisher = $this->publishers->random();
+
+        actingAs($this->user)->postJson(
+            uri: "api/v1/publishers/$publisher->id",
+            data: ['_method' => 'PUT']
+        )->assertForbidden();
+    });
+
     it('delete publisher', function () {
+        /** @var Publisher $publisher */
         $publisher = $this->publishers->random();
 
         $imageData = [
@@ -133,9 +159,9 @@ describe('publishers tests', function () {
 
         Image::factory()->create($imageData);
 
-        deleteJson(uri: "api/v1/publishers/$publisher->id")
-            ->assertSuccessful()
-            ->assertNoContent();
+        actingAs($this->userAdmin)->deleteJson(
+            uri: "api/v1/publishers/$publisher->id"
+        )->assertSuccessful()->assertNoContent();
 
         assertDatabaseMissing(
             table: 'publishers',
@@ -146,5 +172,14 @@ describe('publishers tests', function () {
             table: 'images',
             data: $imageData
         );
+    });
+
+    it('simple user cannot delete publisher', function () {
+        /** @var Publisher $publisher */
+        $publisher = $this->publishers->random();
+
+        actingAs($this->user)->deleteJson(
+            uri: "api/v1/publishers/$publisher->id"
+        )->assertForbidden();
     });
 });
