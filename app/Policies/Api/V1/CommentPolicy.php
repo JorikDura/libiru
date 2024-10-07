@@ -23,6 +23,13 @@ class CommentPolicy
 
     public function delete(User $user, Comment $comment): bool
     {
-        return $user->id === $comment->user_id;
+        return $user->id === $comment->user_id ||
+            $this->isUserCommentsOnHisOwnProfile($user, $comment);
+    }
+
+    private function isUserCommentsOnHisOwnProfile(User $user, Comment $comment): bool
+    {
+        return $comment->commentable_type == User::class &&
+            $comment->commentable_id == $user->id;
     }
 }

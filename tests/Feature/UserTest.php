@@ -136,4 +136,24 @@ describe('user tests', function () {
             uri: "api/v1/users/$user->id/comments/$comment->id"
         )->assertForbidden();
     });
+
+    it('user can delete another user comment on his own profile', function () {
+        /** @var User $user */
+        $user = $this->users->random();
+
+        $newUser = User::factory()->create();
+
+        $data = [
+            'user_id' => $newUser->id,
+            'commentable_id' => $user->id,
+            'commentable_type' => User::class,
+            'text' => fake()->text
+        ];
+
+        $comment = Comment::factory()->create($data);
+
+        actingAs($user)->deleteJson(
+            uri: "api/v1/users/$user->id/comments/$comment->id"
+        )->assertSuccessful()->assertNoContent();
+    });
 });
