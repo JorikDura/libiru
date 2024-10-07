@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1\Post\Comment;
 
-use App\Actions\Api\V1\Post\Comment\DeletePostCommentAction;
+use App\Actions\Api\V1\Comment\DeleteCommentAction;
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use App\Models\Post;
@@ -16,14 +16,14 @@ class DeletePostCommentController extends Controller
     /**
      * @param  Post  $post
      * @param  Comment  $comment
-     * @param  DeletePostCommentAction  $action
+     * @param  DeleteCommentAction  $action
      * @return Response
      * @throws ReflectionException
      */
     public function __invoke(
         Post $post,
         Comment $comment,
-        DeletePostCommentAction $action
+        DeleteCommentAction $action
     ) {
         $action($comment);
 
