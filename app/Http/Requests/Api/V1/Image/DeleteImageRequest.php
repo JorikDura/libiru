@@ -11,7 +11,8 @@ class DeleteImageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => ['required', 'int', 'exists:images,id']
+            'id' => ['required', 'array'],
+            'id.*' => ['required', 'int', 'exists:images,id']
         ];
     }
 }
