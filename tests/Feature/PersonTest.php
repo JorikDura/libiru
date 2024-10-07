@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\UserRole;
 use App\Models\Comment;
 use App\Models\Image;
 use App\Models\Person;
@@ -9,13 +10,19 @@ use Tests\TestHelpers;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertDatabaseMissing;
-use function Pest\Laravel\deleteJson;
 use function Pest\Laravel\getJson;
-use function Pest\Laravel\postJson;
 
 describe('people tests', function () {
     beforeEach(function () {
         $this->people = Person::factory(15)->create();
+
+        $this->userAdmin = User::factory()->create([
+            'role' => UserRole::ADMIN
+        ]);
+
+        $this->user = User::factory()->create([
+            'role' => UserRole::USER
+        ]);
     });
 
     it('get people', function () {
@@ -65,7 +72,7 @@ describe('people tests', function () {
             'images' => TestHelpers::randomUploadedFiles(max: 5)
         ];
 
-        $test = postJson(
+        $test = actingAs($this->userAdmin)->postJson(
             uri: 'api/v1/people',
             data: $data
         )->assertSuccessful()->assertSee([
@@ -97,12 +104,19 @@ describe('people tests', function () {
         ]);
     });
 
+    it('simple user cannot store person', function () {
+        actingAs($this->user)->postJson(
+            uri: 'api/v1/people'
+        )->assertForbidden();
+    });
+
     it('update person', function () {
         Storage::fake('public');
 
+        /** @var Person $person */
         $person = $this->people->random();
 
-        $test = postJson(
+        $test = actingAs($this->userAdmin)->postJson(
             uri: "api/v1/people/$person->id",
             data: [
                 '_method' => 'PUT',
@@ -135,6 +149,16 @@ describe('people tests', function () {
         ]);
     });
 
+    it('simple user cannot update person', function () {
+        /** @var Person $person */
+        $person = $this->people->random();
+
+        actingAs($this->user)->postJson(
+            uri: "api/v1/people/$person->id",
+            data: ['_method' => 'PUT']
+        )->assertForbidden();
+    });
+
     it('delete person', function () {
         /** @var Person $person */
         $person = $this->people->random();
@@ -148,7 +172,7 @@ describe('people tests', function () {
 
         Image::factory()->create($imageData);
 
-        deleteJson(
+        actingAs($this->userAdmin)->deleteJson(
             uri: "api/v1/people/$person->id"
         )->assertSuccessful()->assertNoContent();
 
@@ -161,6 +185,15 @@ describe('people tests', function () {
             table: 'images',
             data: $imageData
         );
+    });
+
+    it('simple user cannot delete person', function () {
+        /** @var Person $person */
+        $person = $this->people->random();
+
+        actingAs($this->user)->deleteJson(
+            uri: "api/v1/people/$person->id"
+        )->assertForbidden();
     });
 
     it('get person comments', function () {
@@ -184,13 +217,11 @@ describe('people tests', function () {
         /** @var Person $person */
         $person = $this->people->random();
 
-        $user = User::factory()->create();
-
         $data = [
             'text' => fake()->text
         ];
 
-        actingAs($user)->postJson(
+        actingAs($this->user)->postJson(
             uri: "api/v1/people/$person->id/comments",
             data: $data
         )->assertSuccessful()->assertSee([
@@ -200,11 +231,77 @@ describe('people tests', function () {
         assertDatabaseHas(
             table: 'comments',
             data: [
-                'user_id' => $user->id,
+                'user_id' => $this->user->id,
                 'commentable_id' => $person->id,
                 'commentable_type' => Person::class,
                 'text' => $data['text']
             ]
         );
+    });
+
+    it('delete person comment', function () {
+        /** @var Person $person */
+        $person = $this->people->random();
+
+        $data = [
+            'user_id' => $this->user->id,
+            'commentable_id' => $person->id,
+            'commentable_type' => Person::class,
+            'text' => fake()->text
+        ];
+
+        $comment = Comment::factory()->create($data);
+
+        actingAs($this->user)->deleteJson(
+            uri: "api/v1/people/$person->id/comments/$comment->id"
+        )->assertSuccessful()->assertNoContent();
+
+        assertDatabaseMissing(
+            table: 'comments',
+            data: $data
+        );
+    });
+
+    it('admin deletes user comment', function () {
+        /** @var Person $person */
+        $person = $this->people->random();
+
+        $data = [
+            'user_id' => $this->user->id,
+            'commentable_id' => $person->id,
+            'commentable_type' => Person::class,
+            'text' => fake()->text
+        ];
+
+        $comment = Comment::factory()->create($data);
+
+        actingAs($this->userAdmin)->deleteJson(
+            uri: "api/v1/people/$person->id/comments/$comment->id"
+        )->assertSuccessful()->assertNoContent();
+
+        assertDatabaseMissing(
+            table: 'comments',
+            data: $data
+        );
+    });
+
+    it('simple user cannot delete another user comment', function () {
+        /** @var Person $person */
+        $person = $this->people->random();
+
+        $data = [
+            'user_id' => $this->user->id,
+            'commentable_id' => $person->id,
+            'commentable_type' => Person::class,
+            'text' => fake()->text
+        ];
+
+        $newUser = User::factory()->create();
+
+        $comment = Comment::factory()->create($data);
+
+        actingAs($newUser)->deleteJson(
+            uri: "api/v1/people/$person->id/comments/$comment->id"
+        )->assertForbidden();
     });
 });
