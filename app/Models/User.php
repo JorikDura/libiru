@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserRole;
 use App\Notifications\EmailVerifyCodeNotification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -49,6 +50,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => UserRole::class
         ];
     }
 
@@ -85,6 +87,16 @@ class User extends Authenticatable implements MustVerifyEmail
             foreignPivotKey: 'user_id',
             relatedPivotKey: 'book_id'
         );
+    }
+
+    public function isAdministrator(): bool
+    {
+        return $this->role == UserRole::ADMIN;
+    }
+
+    public function isModerator(): bool
+    {
+        return $this->role == UserRole::MODERATOR;
     }
 
     public function receivesBroadcastNotificationsOn(): string

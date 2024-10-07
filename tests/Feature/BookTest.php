@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\UserRole;
 use App\Models\Book;
 use App\Models\Comment;
 use App\Models\Genre;
@@ -13,9 +14,7 @@ use Tests\TestHelpers;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertDatabaseMissing;
-use function Pest\Laravel\deleteJson;
 use function Pest\Laravel\getJson;
-use function Pest\Laravel\postJson;
 
 describe('book tests', function () {
     beforeEach(function () {
@@ -23,6 +22,14 @@ describe('book tests', function () {
 
         $this->books = Book::factory(15)->create([
             'publisher_id' => $publisher->id
+        ]);
+
+        $this->userAdmin = User::factory()->create([
+            'role' => UserRole::ADMIN
+        ]);
+
+        $this->user = User::factory()->create([
+            'role' => UserRole::USER
         ]);
     });
 
@@ -76,7 +83,7 @@ describe('book tests', function () {
             'genres' => [Genre::factory()->create()->id],
         ];
 
-        $test = postJson(
+        $test = actingAs($this->userAdmin)->postJson(
             uri: '/api/v1/books',
             data: $data
         )->assertSuccessful()->assertSee([
@@ -104,6 +111,12 @@ describe('book tests', function () {
         ]);
     });
 
+    it('simple user cannot store books', function () {
+        actingAs($this->user)->postJson(
+            uri: '/api/v1/books'
+        )->assertForbidden();
+    });
+
     it('update book', function () {
         Storage::fake('public');
 
@@ -120,7 +133,7 @@ describe('book tests', function () {
             'translators' => [Person::factory()->create()->id]
         ];
 
-        $test = postJson(
+        $test = actingAs($this->userAdmin)->postJson(
             uri: "/api/v1/books/$book->id",
             data: $data + ['_method' => 'PUT']
         )->assertSuccessful()->assertSee([
@@ -146,6 +159,16 @@ describe('book tests', function () {
             $image->original_image,
             $image->preview_image
         ]);
+    });
+
+    it('simple user cannot update books', function () {
+        /** @var Book $book */
+        $book = $this->books->random();
+
+        actingAs($this->user)->postJson(
+            uri: "/api/v1/books/$book->id",
+            data: ['_method' => 'PUT']
+        )->assertForbidden();
     });
 
     it('delete book', function () {
@@ -179,7 +202,8 @@ describe('book tests', function () {
             $image->preview_image,
         ]);
 
-        deleteJson(uri: "api/v1/books/$book->id")
+        actingAs($this->userAdmin)
+            ->deleteJson(uri: "api/v1/books/$book->id")
             ->assertSuccessful()
             ->assertNoContent();
 
@@ -197,6 +221,15 @@ describe('book tests', function () {
             $image->original_image,
             $image->preview_image
         ]);
+    });
+
+    it('simple user cannot delete book', function () {
+        /** @var Book $book */
+        $book = $this->books->random();
+
+        actingAs($this->user)
+            ->deleteJson(uri: "api/v1/books/$book->id")
+            ->assertForbidden();
     });
 
     it('get book comments', function () {
@@ -241,5 +274,71 @@ describe('book tests', function () {
                 'text' => $data['text'],
             ]
         );
+    });
+
+    it('delete book comment', function () {
+        /** @var Book $book */
+        $book = $this->books->random();
+
+        $data = [
+            'user_id' => $this->user->id,
+            'commentable_id' => $book->id,
+            'commentable_type' => Book::class,
+            'text' => fake()->text
+        ];
+
+        $comment = Comment::factory()->create($data);
+
+        actingAs($this->user)->deleteJson(
+            uri: "api/v1/books/$book->id/comments/$comment->id"
+        )->assertSuccessful()->assertNoContent();
+
+        assertDatabaseMissing(
+            table: 'comments',
+            data: $data
+        );
+    });
+
+    it('admin deletes user comment', function () {
+        /** @var Book $book */
+        $book = $this->books->random();
+
+        $data = [
+            'user_id' => $this->user->id,
+            'commentable_id' => $book->id,
+            'commentable_type' => Book::class,
+            'text' => fake()->text
+        ];
+
+        $comment = Comment::factory()->create($data);
+
+        actingAs($this->userAdmin)->deleteJson(
+            uri: "api/v1/books/$book->id/comments/$comment->id"
+        )->assertSuccessful()->assertNoContent();
+
+        assertDatabaseMissing(
+            table: 'comments',
+            data: $data
+        );
+    });
+
+    it('simple user cannot delete another user comment', function () {
+        /** @var Book $book */
+        $book = $this->books->random();
+
+        $data = [
+            'user_id' => $this->user->id,
+            'commentable_id' => $book->id,
+            'commentable_type' => Book::class,
+            'text' => fake()->text
+        ];
+
+        $newUser = User::factory()->create();
+
+        $comment = Comment::factory()->create($data);
+
+        actingAs($newUser)->deleteJson(
+            uri: "api/v1/books/$book->id/comments/$comment->id"
+        )->assertForbidden();
     });
 });

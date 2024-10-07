@@ -2,8 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\Comment;
+use App\Models\User;
+use App\Policies\Api\V1\CommentPolicy;
+use App\Policies\Api\V1\UserPolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,5 +32,7 @@ class AppServiceProvider extends ServiceProvider
         Model::shouldBeStrict(app()->isLocal());
         //Broadcast for api with auth
         Broadcast::routes(['prefix' => 'api', 'middleware' => 'auth:sanctum']);
+        Gate::policy(User::class, UserPolicy::class);
+        Gate::policy(Comment::class, CommentPolicy::class);
     }
 }
