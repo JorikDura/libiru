@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Enums\UserRole;
 use App\Models\Book;
 use App\Models\Comment;
 use App\Models\Image;
@@ -18,7 +19,14 @@ use function Pest\Laravel\getJson;
 describe('posts tests', function () {
     beforeEach(function () {
         $this->posts = Post::factory(15)->create();
-        $this->user = User::factory()->create();
+
+        $this->userAdmin = User::factory()->create([
+            'role' => UserRole::ADMIN
+        ]);
+
+        $this->user = User::factory()->create([
+            'role' => UserRole::USER
+        ]);
     });
 
     it('get posts', function () {
@@ -57,7 +65,7 @@ describe('posts tests', function () {
             'tags' => [fake()->word]
         ];
 
-        $test = actingAs($this->user)->postJson(
+        $test = actingAs($this->userAdmin)->postJson(
             uri: "api/v1/posts",
             data: $data
         )->assertSuccessful()->assertSee([
@@ -85,6 +93,12 @@ describe('posts tests', function () {
         ]);
     });
 
+    it('simple user cannot store post', function () {
+        actingAs($this->user)->postJson(
+            uri: "api/v1/posts"
+        )->assertForbidden();
+    });
+
     it('update post', function () {
         Storage::fake('public');
 
@@ -99,7 +113,7 @@ describe('posts tests', function () {
         /** @var Post $post */
         $post = $this->posts->random();
 
-        $test = actingAs($this->user)->postJson(
+        $test = actingAs($this->userAdmin)->postJson(
             uri: "api/v1/posts/$post->id",
             data: $data + ['_method' => 'PATCH']
         )->assertSuccessful()->assertSee([
@@ -125,6 +139,16 @@ describe('posts tests', function () {
             $image->original_image,
             $image->preview_image
         ]);
+    });
+
+    it('simple user cannot update post', function () {
+        /** @var Post $post */
+        $post = $this->posts->random();
+
+        actingAs($this->user)->postJson(
+            uri: "api/v1/posts/$post->id",
+            data: ['_method' => 'PUT']
+        )->assertForbidden();
     });
 
     it('delete post', function () {
@@ -158,7 +182,7 @@ describe('posts tests', function () {
             $image->preview_image,
         ]);
 
-        actingAs($this->user)->deleteJson(
+        actingAs($this->userAdmin)->deleteJson(
             uri: "api/v1/posts/$post->id"
         )->assertSuccessful()->assertNoContent();
 
@@ -176,6 +200,15 @@ describe('posts tests', function () {
             $image->original_image,
             $image->preview_image
         ]);
+    });
+
+    it('simple user cannot delete post', function () {
+        /** @var Post $post */
+        $post = $this->posts->random();
+
+        actingAs($this->user)->deleteJson(
+            uri: "api/v1/posts/$post->id"
+        )->assertForbidden();
     });
 
     it('get post comments', function () {
@@ -222,10 +255,14 @@ describe('posts tests', function () {
     it('delete post comment', function () {
         $post = $this->posts->random();
 
-        $comment = Comment::factory()->create([
+        $data = [
+            'user_id' => $this->user->id,
             'commentable_id' => $post->id,
-            'commentable_type' => Post::class
-        ]);
+            'commentable_type' => Post::class,
+            'text' => fake()->text
+        ];
+
+        $comment = Comment::factory()->create($data);
 
         actingAs($this->user)->deleteJson(
             uri: "api/v1/posts/$post->id/comments/$comment->id"
@@ -233,9 +270,50 @@ describe('posts tests', function () {
 
         assertDatabaseMissing(
             table: 'comments',
-            data: [
-                'text' => $comment->text
-            ]
+            data: $data
         );
+    });
+
+    it('admin deletes user comment', function () {
+        /** @var Post $post */
+        $post = $this->posts->random();
+
+        $data = [
+            'user_id' => $this->user->id,
+            'commentable_id' => $post->id,
+            'commentable_type' => Post::class,
+            'text' => fake()->text
+        ];
+
+        $comment = Comment::factory()->create($data);
+
+        actingAs($this->userAdmin)->deleteJson(
+            uri: "api/v1/posts/$post->id/comments/$comment->id"
+        )->assertSuccessful()->assertNoContent();
+
+        assertDatabaseMissing(
+            table: 'comments',
+            data: $data
+        );
+    });
+
+    it('simple user cannot delete another user comment', function () {
+        /** @var Post $post */
+        $post = $this->posts->random();
+
+        $data = [
+            'user_id' => $this->user->id,
+            'commentable_id' => $post->id,
+            'commentable_type' => Post::class,
+            'text' => fake()->text
+        ];
+
+        $newUser = User::factory()->create();
+
+        $comment = Comment::factory()->create($data);
+
+        actingAs($newUser)->deleteJson(
+            uri: "api/v1/posts/$post->id/comments/$comment->id"
+        )->assertForbidden();
     });
 });
