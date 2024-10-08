@@ -13,7 +13,7 @@ final readonly class DeleteImageAction
     private const string ERROR_MESSAGE = "There's no such methods as 'images' or 'image' for %s";
 
     /**
-     * Delete images
+     * Delete all images
      * If there is no such methods as "images" or "image"
      * Exception will be thrown
      * @param  object  $model
