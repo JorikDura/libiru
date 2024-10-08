@@ -33,6 +33,7 @@ class BookResource extends JsonResource
             'total_score' => $this->whenHas('total_score'),
             'user_score' => $this->whenHas('score'),
             'is_favorite' => $this->whenHas('is_favorite'),
+            'favorite_count' => $this->whenHas('favorite_count'),
             'status' => $this->whenHas('status'),
         ];
     }

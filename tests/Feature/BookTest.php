@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\BookListStatus;
 use App\Enums\UserRole;
 use App\Models\Book;
 use App\Models\Comment;
@@ -340,5 +341,57 @@ describe('book tests', function () {
         actingAs($newUser)->deleteJson(
             uri: "api/v1/books/$book->id/comments/$comment->id"
         )->assertForbidden();
+    });
+
+    it('get book statuses', function () {
+        /** @var Book $book */
+        $book = $this->books->random();
+        /** @var User $user */
+        $user = $this->user;
+
+        $user->books()->syncWithPivotValues(
+            ids: $book,
+            values: [
+                'status' => BookListStatus::READ
+            ],
+            detaching: false
+        );
+
+        $count = $user->books()->where([
+            'status' => BookListStatus::READ
+        ])->count();
+
+        getJson(uri: "/api/v1/books/$book->id/statuses")
+            ->assertSuccessful()->assertSee([
+                'status' => BookListStatus::READ,
+                'count' => $count
+            ]);
+    });
+
+    it('add book to user list', function () {
+        /** @var Book $book */
+        $book = $this->books->random();
+
+        $data = [
+            'status' => BookListStatus::DROPPED,
+            'favorite' => fake()->boolean(),
+            'score' => random_int(0, 10)
+        ];
+
+        actingAs($this->user)->postJson(
+            uri: "/api/v1/books/$book->id/lists",
+            data: $data
+        )->assertSuccessful()->assertNoContent();
+
+        assertDatabaseHas(
+            table: 'user_book_list',
+            data: [
+                'book_id' => $book->id,
+                'user_id' => $this->user->id,
+                'status' => $data['status'],
+                'is_favorite' => $data['favorite'],
+                'score' => $data['score']
+            ]
+        );
     });
 });
