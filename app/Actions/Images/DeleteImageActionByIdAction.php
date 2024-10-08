@@ -6,6 +6,7 @@ namespace App\Actions\Images;
 
 use App\Http\Requests\Api\V1\Image\DeleteImageRequest;
 use App\Models\Image;
+use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\Response;
 
 final readonly class DeleteImageActionByIdAction
@@ -16,19 +17,27 @@ final readonly class DeleteImageActionByIdAction
     }
 
     /**
+     * Deletes given model images via id
      * @param  mixed  $model
      * @return void
      */
-    public function __invoke(
-        mixed $model
-    ): void {
-        /** @var Image $image */
-        $image = $model->images()->find($this->request->validated('id'))
-            ?? abort(
-                code: Response::HTTP_NOT_FOUND,
-                message: __('messages.no_image_found_for_current_model')
-            );
+    public function __invoke(mixed $model): void
+    {
+        $imageIds = $this->request->validated('id');
 
-        $image->delete();
+        /** @var Collection<Image> $images */
+        $images = $model->images()->find($imageIds);
+
+        abort_if(
+            boolean: $images->isEmpty(),
+            code: Response::HTTP_NOT_FOUND,
+            message: __('messages.no_image_found_for_current_model')
+        );
+
+        $images->each(fn(Image $image) => $image->deleteImagesInStorage());
+
+        $model->images()
+            ->whereId($imageIds)
+            ->delete();
     }
 }
