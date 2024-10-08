@@ -34,7 +34,7 @@ final readonly class DeleteImageActionByIdAction
             message: __('messages.no_image_found_for_current_model')
         );
 
-        $images->each(fn(Image $image) => $image->deleteImagesInStorage());
+        $images->each(fn (Image $image) => $image->deleteImagesInStorage());
 
         $model->images()
             ->whereId($imageIds)
