@@ -42,6 +42,16 @@ final readonly class ShowBookAction
                         );
                 },
                 as: 'total_score'
+            )->selectSub(
+                query: function ($query) use ($bookId) {
+                    $query->selectRaw('count(is_favorite)')
+                        ->from('user_book_list')
+                        ->whereRaw(
+                            sql: '"user_book_list"."book_id" = ? AND "user_book_list"."is_favorite" = true',
+                            bindings: [$bookId]
+                        );
+                },
+                as: 'favorite_count'
             )->when(
                 value: !is_null($user),
                 callback: function (Builder $query) use ($bookId, $user) {
