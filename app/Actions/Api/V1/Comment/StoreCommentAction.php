@@ -40,8 +40,7 @@ final readonly class StoreCommentAction
         $this->request->whenHas('images', function (array $images) use ($comment) {
             $this->storeImageAction->storeMany(
                 files: $images,
-                id: $comment->id,
-                type: Comment::class,
+                model: $comment
             );
         });
 

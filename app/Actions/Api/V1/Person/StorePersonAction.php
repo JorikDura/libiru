@@ -32,8 +32,7 @@ final readonly class StorePersonAction
         $this->request->whenHas('images', function (array $images) use ($person) {
             $this->storeImageAction->storeMany(
                 files: $images,
-                id: $person->id,
-                type: Person::class,
+                model: $person
             );
         });
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1\Auth;
 
+use App\Actions\Images\DeleteImageAction;
 use App\Actions\Images\StoreImageAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Auth\UploadUserImageRequest;
@@ -15,25 +16,24 @@ use ReflectionException;
 class UploadUserImageController extends Controller
 {
     /**
-     * @param  StoreImageAction  $action
      * @param  User  $user
      * @param  UploadUserImageRequest  $request
+     * @param  StoreImageAction  $storeImageAction
+     * @param  DeleteImageAction  $deleteImageAction
      * @return ImageResource
      * @throws ReflectionException
      */
     public function __invoke(
-        StoreImageAction $action,
         #[CurrentUser] User $user,
-        UploadUserImageRequest $request
+        UploadUserImageRequest $request,
+        StoreImageAction $storeImageAction,
+        DeleteImageAction $deleteImageAction
     ): ImageResource {
-        $image = $user->image()->first();
+        $deleteImageAction($user);
 
-        $image?->delete();
-
-        $image = $action->store(
+        $image = $storeImageAction->store(
             file: $request->validated('image'),
-            id: $user->id,
-            type: User::class,
+            model: $user
         );
 
         return ImageResource::make($image);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\Images;
 
 use App\Models\Image;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -21,25 +22,23 @@ final readonly class StoreImageAction
 
     /**
      * @param  UploadedFile  $file
+     * @param  Model  $model
      * @param  ?string  $path
-     * @param  int  $id
-     * @param  string  $type
-     * @param  string|null  $name
-     * @return ?Image
+     * @param  ?string  $name
+     * @return Image
      * @throws ReflectionException
      */
     public function store(
         UploadedFile $file,
-        int $id,
-        string $type,
+        Model $model,
         ?string $path = null,
         ?string $name = null,
-    ): ?Image {
+    ): Image {
         $image = InterventionImage::read($file);
 
         $shouldScale = $image->height() > self::DEFAULT_MIN_HEIGHT;
 
-        $path ??= $this->getPath($type);
+        $path ??= $this->getPath($model::class);
 
         /** @var array{original: string, preview: string} $names */
         $names = $this->transformName(
@@ -49,8 +48,8 @@ final readonly class StoreImageAction
         );
 
         $dbImage = Image::create([
-            'imageable_id' => $id,
-            'imageable_type' => $type,
+            'imageable_id' => $model->getKey(),
+            'imageable_type' => $model::class,
             'original_image' => $names['original'],
             'preview_image' => $names['preview']
         ]);
@@ -65,8 +64,7 @@ final readonly class StoreImageAction
 
     /**
      * @param  array  $files
-     * @param  int  $id
-     * @param  string  $type
+     * @param  Model  $model
      * @param  ?string  $path
      * @param  ?string  $name
      * @return void
@@ -74,8 +72,7 @@ final readonly class StoreImageAction
      */
     public function storeMany(
         array $files,
-        int $id,
-        string $type,
+        Model $model,
         ?string $path = null,
         ?string $name = null,
     ): void {
@@ -87,7 +84,7 @@ final readonly class StoreImageAction
 
             $shouldScale = $image->height() > self::DEFAULT_MIN_HEIGHT;
 
-            $path ??= $this->getPath($type);
+            $path ??= $this->getPath($model::class);
 
             /** @var array{original: string, preview: string} $names */
             $names = $this->transformName(
@@ -97,8 +94,8 @@ final readonly class StoreImageAction
             );
 
             $dbImagesData[] = [
-                'imageable_id' => $id,
-                'imageable_type' => $type,
+                'imageable_id' => $model->getKey(),
+                'imageable_type' => $model::class,
                 'original_image' => $names['original'],
                 'preview_image' => $names['preview']
             ];
@@ -183,7 +180,7 @@ final readonly class StoreImageAction
     private function getPath(string $type): string
     {
         return self::DEFAULT_PATH.Str::of(
-            string: (new ReflectionClass($type))->getShortName()
-        )->plural()->lower()->toString().'/';
+                string: (new ReflectionClass($type))->getShortName()
+            )->plural()->lower()->toString().'/';
     }
 }

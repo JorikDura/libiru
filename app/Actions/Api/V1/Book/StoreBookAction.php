@@ -58,8 +58,7 @@ final readonly class StoreBookAction
             $this->request->whenHas('images', function (array $images) use ($book) {
                 $this->storeImageAction->storeMany(
                     files: $images,
-                    id: $book->id,
-                    type: Book::class,
+                    model: $book
                 );
             });
 

@@ -33,8 +33,7 @@ final readonly class StorePublisherAction
         $this->request->whenHas('image', function (UploadedFile $image) use ($publisher) {
             $this->storeImageAction->store(
                 file: $image,
-                id: $publisher->id,
-                type: Publisher::class
+                model: $publisher
             );
         });
 

@@ -50,8 +50,7 @@ final readonly class UpdatePostAction
 
             $this->request->whenHas('images', fn (array $images) => $this->storeImageAction->storeMany(
                 files: $images,
-                id: $post->id,
-                type: Post::class
+                model: $post
             ));
 
             return $post->loadFullPost();

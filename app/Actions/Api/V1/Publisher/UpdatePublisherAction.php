@@ -36,8 +36,7 @@ final readonly class UpdatePublisherAction
 
             $this->storeImageAction->store(
                 file: $image,
-                id: $publisher->id,
-                type: Publisher::class
+                model: $publisher
             );
         });
 
