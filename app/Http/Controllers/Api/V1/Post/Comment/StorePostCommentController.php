@@ -22,10 +22,7 @@ class StorePostCommentController extends Controller
         Post $post,
         StoreCommentAction $action,
     ) {
-        $comment = $action(
-            commentableId: $post->id,
-            commentableType: Post::class
-        );
+        $comment = $action($post);
 
         return CommentResource::make($comment);
     }

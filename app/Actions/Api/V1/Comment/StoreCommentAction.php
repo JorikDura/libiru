@@ -9,6 +9,7 @@ use App\Http\Requests\Api\V1\Comment\StoreCommentRequest;
 use App\Models\Comment;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
+use Illuminate\Database\Eloquent\Model;
 use ReflectionException;
 
 final readonly class StoreCommentAction
@@ -21,18 +22,15 @@ final readonly class StoreCommentAction
     }
 
     /**
-     * @param  int  $commentableId
-     * @param  string  $commentableType
+     * @param  Model  $model
      * @return Comment
      * @throws ReflectionException
      */
-    public function __invoke(
-        int $commentableId,
-        string $commentableType
-    ): Comment {
+    public function __invoke(Model $model): Comment
+    {
         $comment = Comment::create([
-            'commentable_id' => $commentableId,
-            'commentable_type' => $commentableType,
+            'commentable_id' => $model->getKey(),
+            'commentable_type' => $model::class,
             'user_id' => $this->user->id,
             'text' => $this->request->validated('text'),
         ]);

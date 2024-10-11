@@ -22,10 +22,7 @@ class StoreBookCommentController extends Controller
         Book $book,
         StoreCommentAction $action
     ): CommentResource {
-        $comment = $action(
-            commentableId: $book->id,
-            commentableType: Book::class
-        );
+        $comment = $action($book);
 
         return CommentResource::make($comment);
     }
