@@ -229,6 +229,8 @@ describe('posts tests', function () {
     });
 
     it('store post comment', function () {
+        Storage::fake('public');
+
         /** @var Post $post */
         $post = $this->posts->random();
 
