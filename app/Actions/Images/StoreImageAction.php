@@ -180,7 +180,7 @@ final readonly class StoreImageAction
     private function getPath(string $type): string
     {
         return self::DEFAULT_PATH.Str::of(
-                string: (new ReflectionClass($type))->getShortName()
-            )->plural()->lower()->toString().'/';
+            string: (new ReflectionClass($type))->getShortName()
+        )->plural()->lower()->toString().'/';
     }
 }
