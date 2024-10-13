@@ -26,8 +26,13 @@ final readonly class IndexPersonAction
         return QueryBuilder::for(Person::class)
             ->allowedFilters([
                 AllowedFilter::callback('name', function (Builder $query, string $value) {
-                    $query->whereLike('name', "%$value%")
-                        ->orWhereLike('russian_name', "%$value%");
+                    $query->whereRaw(
+                        sql: '"people"."name" LIKE ?',
+                        bindings: ["%$value%"]
+                    )->orWhereRaw(
+                        sql: '"people"."russian_name" LIKE ?',
+                        bindings: ["%$value%"]
+                    );
                 }),
             ])
             ->with(['image'])
