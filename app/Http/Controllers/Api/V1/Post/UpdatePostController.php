@@ -19,7 +19,7 @@ class UpdatePostController extends Controller
     public function __invoke(
         Post $post,
         UpdatePostAction $action
-    ) {
+    ): PostResource {
         $post = $action($post);
 
         return PostResource::make($post);

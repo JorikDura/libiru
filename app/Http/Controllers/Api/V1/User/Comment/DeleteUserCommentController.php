@@ -24,7 +24,7 @@ class DeleteUserCommentController extends Controller
         User $user,
         Comment $comment,
         DeleteCommentAction $action
-    ) {
+    ): Response {
         $action($comment);
 
         return response()->noContent();

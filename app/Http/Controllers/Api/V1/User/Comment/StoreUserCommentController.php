@@ -21,7 +21,7 @@ class StoreUserCommentController extends Controller
     public function __invoke(
         User $user,
         StoreCommentAction $action
-    ) {
+    ): CommentResource {
         $comment = $action($user);
 
         return CommentResource::make($comment);

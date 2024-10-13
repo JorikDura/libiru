@@ -13,7 +13,7 @@ class ShowPostController extends Controller
     public function __invoke(
         int $postId,
         ShowPostAction $action
-    ) {
+    ): PostResource {
         $post = $action($postId);
 
         return PostResource::make($post);

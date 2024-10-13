@@ -19,7 +19,7 @@ class ShowBookScoreController extends Controller
     public function __invoke(
         int $bookId,
         ShowBookScoreAction $action
-    ) {
+    ): AnonymousResourceCollection {
         $test = $action($bookId);
 
         return BookScoreResource::collection($test);

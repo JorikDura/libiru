@@ -24,7 +24,7 @@ class DeletePostCommentController extends Controller
         Post $post,
         Comment $comment,
         DeleteCommentAction $action
-    ) {
+    ): Response {
         $action($comment);
 
         return response()->noContent();

@@ -19,7 +19,7 @@ class SubscribePersonController extends Controller
     public function __invoke(
         Person $person,
         SubscribePersonAction $action
-    ) {
+    ): Response {
         $action($person);
 
         return response()->noContent();
