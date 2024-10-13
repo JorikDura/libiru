@@ -25,7 +25,8 @@ describe('user tests', function () {
         getJson(uri: "api/v1/users")
             ->assertSuccessful()
             ->assertSee([
-                'name' => $user->name
+                'name' => $user->name,
+                'nickname' => $user->nickname
             ]);
     });
 
@@ -33,10 +34,11 @@ describe('user tests', function () {
         /** @var User $user */
         $user = $this->users->random();
 
-        getJson(uri: "api/v1/users?filter[name]=$user->name")
+        getJson(uri: "api/v1/users?filter[nickname]=$user->nickname")
             ->assertSuccessful()
             ->assertSee([
-                'name' => $user->name
+                'name' => $user->name,
+                'nickname' => $user->nickname
             ]);
     });
 
@@ -44,10 +46,11 @@ describe('user tests', function () {
         /** @var User $user */
         $user = $this->users->random();
 
-        getJson(uri: "api/v1/users/$user->id")
+        getJson(uri: "api/v1/users/@$user->nickname")
             ->assertSuccessful()
             ->assertSee([
-                'name' => $user->name
+                'name' => $user->name,
+                'nickname' => $user->nickname,
             ]);
     });
 
@@ -61,7 +64,7 @@ describe('user tests', function () {
             'commentable_type' => User::class
         ]);
 
-        getJson(uri: "api/v1/users/$user->id/comments")
+        getJson(uri: "api/v1/users/@$user->nickname/comments")
             ->assertSuccessful()
             ->assertSee([
                 'text' => $comments->random()->text
@@ -77,7 +80,7 @@ describe('user tests', function () {
         ];
 
         actingAs($user)->postJson(
-            uri: "api/v1/users/$user->id/comments",
+            uri: "api/v1/users/@$user->nickname/comments",
             data: $data
         )->assertSuccessful()->assertSee([
             'text' => $data['text']
@@ -108,7 +111,7 @@ describe('user tests', function () {
         $comment = Comment::factory()->create($data);
 
         actingAs($this->userAdmin)->deleteJson(
-            uri: "api/v1/users/$user->id/comments/$comment->id"
+            uri: "api/v1/users/@$user->nickname/comments/$comment->id"
         )->assertSuccessful()->assertNoContent();
 
         assertDatabaseMissing(
@@ -133,7 +136,7 @@ describe('user tests', function () {
         $comment = Comment::factory()->create($data);
 
         actingAs($newUser)->deleteJson(
-            uri: "api/v1/users/$user->id/comments/$comment->id"
+            uri: "api/v1/users/@$user->nickname/comments/$comment->id"
         )->assertForbidden();
     });
 
@@ -153,7 +156,7 @@ describe('user tests', function () {
         $comment = Comment::factory()->create($data);
 
         actingAs($user)->deleteJson(
-            uri: "api/v1/users/$user->id/comments/$comment->id"
+            uri: "api/v1/users/@$user->nickname/comments/$comment->id"
         )->assertSuccessful()->assertNoContent();
     });
 });

@@ -27,6 +27,7 @@ describe('auth', function () {
 
         $data = [
             'name' => fake('en_GB')->name,
+            'nickname' => fake('en_GB')->userName,
             'email' => fake()->email,
             'password' => $password = fake()->password(minLength: 8),
             'password_confirmation' => $password,
@@ -41,12 +42,14 @@ describe('auth', function () {
             table: 'users',
             data: [
                 'name' => $data['name'],
+                'nickname' => $data['nickname'],
                 'email' => $data['email']
             ]
         );
 
         $user = User::where([
             'name' => $data['name'],
+            'nickname' => $data['nickname'],
             'email' => $data['email'],
         ])->first();
 

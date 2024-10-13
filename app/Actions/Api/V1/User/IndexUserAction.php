@@ -23,7 +23,7 @@ final readonly class IndexUserAction
     {
         return QueryBuilder::for(User::class)
             ->allowedFilters([
-                'name',
+                'nickname'
             ])
             ->with(['image'])
             ->paginate()

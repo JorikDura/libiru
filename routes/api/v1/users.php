@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'v1/users'], function () {
     Route::get('/', IndexUserController::class);
-    Route::get('/{user}', ShowUserController::class);
+    Route::get('/@{nicknameId}', ShowUserController::class);
 
-    Route::group(['prefix' => '{user}/comments'], function () {
+    Route::group(['prefix' => '@{nickname}/comments'], function () {
         Route::get('/', IndexUserCommentController::class);
         Route::group(['middleware' => 'auth:sanctum'], function () {
             Route::post('/', StoreUserCommentController::class);
