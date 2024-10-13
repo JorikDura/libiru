@@ -18,9 +18,8 @@ final readonly class ShowBookAction
      * @param  int  $bookId
      * @return Book|Model
      */
-    public function __invoke(
-        int $bookId
-    ): Book|Model {
+    public function __invoke(int $bookId): Book|Model
+    {
         /** @var ?User $user */
         $user = auth('sanctum')->user();
 

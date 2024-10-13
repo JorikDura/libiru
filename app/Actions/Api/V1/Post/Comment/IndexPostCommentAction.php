@@ -15,6 +15,10 @@ final readonly class IndexPostCommentAction
     ) {
     }
 
+    /**
+     * @param  Post  $post
+     * @return LengthAwarePaginator
+     */
     public function __invoke(Post $post): LengthAwarePaginator
     {
         return $post

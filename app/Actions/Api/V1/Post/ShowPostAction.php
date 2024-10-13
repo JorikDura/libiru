@@ -10,6 +10,10 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 final readonly class ShowPostAction
 {
+    /**
+     * @param  int  $postId
+     * @return Post
+     */
     public function __invoke(int $postId): Post
     {
         return Post::with([

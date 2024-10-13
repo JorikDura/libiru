@@ -23,9 +23,8 @@ final readonly class UpdateBookAction
      * @return Book
      * @throws ReflectionException
      */
-    public function __invoke(
-        Book $book
-    ): Book {
+    public function __invoke(Book $book): Book
+    {
         $bookData = $this->request->safe()->except([
             'images',
             'authors',

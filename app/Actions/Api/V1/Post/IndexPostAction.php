@@ -17,6 +17,9 @@ final readonly class IndexPostAction
     ) {
     }
 
+    /**
+     * @return LengthAwarePaginator
+     */
     public function __invoke(): LengthAwarePaginator
     {
         return QueryBuilder::for(Post::class)
