@@ -10,14 +10,17 @@ use Illuminate\Auth\Events\Registered;
 
 final readonly class RegisterUserAction
 {
+    public function __construct(
+        private RegistrationRequest $request
+    ) {
+    }
+
     /**
-     * @param  RegistrationRequest  $request
      * @return User
      */
-    public function __invoke(
-        RegistrationRequest $request
-    ): User {
-        $user = User::create($request->validated());
+    public function __invoke(): User
+    {
+        $user = User::create($this->request->validated());
 
         event(new Registered($user));
 

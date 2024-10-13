@@ -14,8 +14,10 @@ final readonly class IndexGenreAction
      */
     public function __invoke(): mixed
     {
-        return Cache::remember('genres', 60 * 60 * 24, function () {
-            return Genre::all();
-        });
+        return Cache::remember(
+            key: 'genres',
+            ttl: 60 * 60 * 24,
+            callback: fn() => Genre::all()
+        );
     }
 }

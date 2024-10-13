@@ -15,9 +15,8 @@ final readonly class CreateTokenAction
      * @param  User  $user
      * @return string
      */
-    public function __invoke(
-        User $user
-    ): string {
+    public function __invoke(User $user): string
+    {
         return $user->createToken(name: self::TOKEN_NAME)
             ->plainTextToken;
     }
