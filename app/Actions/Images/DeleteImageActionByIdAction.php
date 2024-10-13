@@ -23,6 +23,7 @@ final readonly class DeleteImageActionByIdAction
      */
     public function __invoke(mixed $model): void
     {
+        /** @var array $imageIds */
         $imageIds = $this->request->validated('id');
 
         /** @var Collection<Image> $images */
@@ -34,7 +35,7 @@ final readonly class DeleteImageActionByIdAction
             message: __('messages.no_image_found_for_current_model')
         );
 
-        $images->each(fn (Image $image) => $image->deleteImagesInStorage());
+        $images->each(fn(Image $image) => $image->deleteImagesInStorage());
 
         $model->images()
             ->whereId($imageIds)
