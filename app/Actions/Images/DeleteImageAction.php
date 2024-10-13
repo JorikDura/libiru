@@ -11,7 +11,7 @@ use ReflectionException;
 
 final readonly class DeleteImageAction
 {
-    private const string ERROR_MESSAGE = "There's no such methods as 'images' or 'image' for %s model";
+    private const string ERROR_MESSAGE = "There's no such methods as 'images' or 'image' in %s model";
 
     /**
      * Delete all images
