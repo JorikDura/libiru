@@ -8,7 +8,9 @@ use App\Models\Publisher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin Publisher */
+/**
+ * @mixin Publisher
+ */
 class PublisherResource extends JsonResource
 {
     public function toArray(Request $request): array
