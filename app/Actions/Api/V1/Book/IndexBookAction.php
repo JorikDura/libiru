@@ -40,15 +40,29 @@ final readonly class IndexBookAction
                 'publisher.name',
                 AllowedFilter::callback(
                     name: 'book.name',
-                    callback: fn (Builder $query, string $value) => $query->whereLike('name', "%$value%")
-                        ->orWhereLike('russian_name', "%$value%")
+                    callback: function (Builder $query, string $value) {
+                        $query->whereRaw(
+                            sql: '"books"."name" LIKE ?',
+                            bindings: ["%$value%"]
+                        )->orWhereRaw(
+                            sql: '"books"."russian_name" LIKE ?',
+                            bindings: ["%$value%"]
+                        );
+                    }
                 ),
                 AllowedFilter::callback(
                     name: 'person.name',
-                    callback: fn (Builder $query, $value) => $query->whereHas(
+                    callback: fn(Builder $query, $value) => $query->whereHas(
                         relation: 'people',
-                        callback: fn (Builder $query) => $query->whereLike('name', "%$value%")
-                            ->orWhereLike('russian_name', "%$value%")
+                        callback: function (Builder $query) use ($value) {
+                            $query->whereRaw(
+                                sql: '"people"."name" LIKE ?',
+                                bindings: ["%$value%"]
+                            )->orWhereRaw(
+                                sql: '"people"."russian_name" LIKE ?',
+                                bindings: ["%$value%"]
+                            );
+                        }
                     )
                 )
             ])
@@ -68,15 +82,15 @@ final readonly class IndexBookAction
             ->addSelect('books.*')
             ->when(
                 value: ($isFavourite && !is_null($userId)),
-                callback: fn (Builder $query) => $query->whereHas(
+                callback: fn(Builder $query) => $query->whereHas(
                     relation: 'users',
-                    callback: fn (Builder $query) => $query->where('user_book_list.is_favorite', true)
+                    callback: fn(Builder $query) => $query->where('user_book_list.is_favorite', true)
                 )
             )->when(
                 value: (!is_null($userId) && !is_null($status)),
-                callback: fn (Builder $query) => $query->whereHas(
+                callback: fn(Builder $query) => $query->whereHas(
                     relation: 'users',
-                    callback: fn (Builder $query) => $query->where([
+                    callback: fn(Builder $query) => $query->where([
                         'user_book_list.status' => $status,
                         'user_book_list.user_id' => $userId
                     ])
