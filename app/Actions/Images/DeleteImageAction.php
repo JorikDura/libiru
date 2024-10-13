@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Actions\Images;
 
 use App\Models\Image;
+use Illuminate\Database\Eloquent\Collection;
 use ReflectionClass;
 use ReflectionException;
 
 final readonly class DeleteImageAction
 {
-    private const string ERROR_MESSAGE = "There's no such methods as 'images' or 'image' for %s";
+    private const string ERROR_MESSAGE = "There's no such methods as 'images' or 'image' for %s model";
 
     /**
      * Delete all images
@@ -25,13 +26,14 @@ final readonly class DeleteImageAction
         $reflection = new ReflectionClass($model);
 
         if ($reflection->hasMethod('images')) {
+            /** @var Collection<array-key, Image> $images */
             $images = $model->images()->get();
 
-            $images?->each(function (Image $image) {
+            $images->each(function (Image $image): void {
                 $image->deleteImagesInStorage();
             });
 
-            if (!is_null($images)) {
+            if ($images->isNotEmpty()) {
                 $model->images()->delete();
             }
 
@@ -48,10 +50,7 @@ final readonly class DeleteImageAction
         }
 
         throw new ReflectionException(
-            message: sprintf(
-                format: self::ERROR_MESSAGE,
-                values: $reflection->getShortName()
-            )
+            message: sprintf(self::ERROR_MESSAGE, $reflection->getShortName())
         );
     }
 }
