@@ -17,7 +17,7 @@ final readonly class IndexGenreAction
         return Cache::remember(
             key: 'genres',
             ttl: 60 * 60 * 24,
-            callback: fn() => Genre::all()
+            callback: fn () => Genre::all()
         );
     }
 }
