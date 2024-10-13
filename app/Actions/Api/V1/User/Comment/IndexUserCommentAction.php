@@ -19,7 +19,8 @@ final readonly class IndexUserCommentAction
      * @param  User  $user
      * @return LengthAwarePaginator
      */
-    public function __invoke(User $user): LengthAwarePaginator {
+    public function __invoke(User $user): LengthAwarePaginator
+    {
         return $user
             ->comments()
             ->with(['user', 'images'])
